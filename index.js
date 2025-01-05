@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Copy current url
 // @namespace    https://greasyfork.org/en/users/901750-gooseob
-// @version      1.0.3
+// @version      1.0.4
 // @description  Copy current website url by pressing yy
 // @author       GooseOb
 // @license      MIT
@@ -9,7 +9,6 @@
 // ==/UserScript==
 
 (function () {
-  let isPressed = false;
   const isInput = (element) => {
     const tagName = element.tagName.toLowerCase();
     return (
@@ -17,17 +16,25 @@
     );
   };
 
-  document.addEventListener("keyup", (e) => {
-    if (e.key === "y" && !isInput(e.target)) {
-      if (isPressed) {
-        navigator.clipboard.writeText(window.location.href);
-        isPressed = false;
-      } else {
-        isPressed = true;
-        setTimeout(() => {
-          isPressed = false;
-        }, 1000);
+  const listenForDoublePress = (check, action) => {
+    let timeout = 0;
+    document.addEventListener("keyup", (e) => {
+      if (check(e)) {
+        if (timeout) {
+          action();
+          clearTimeout(timeout);
+          timeout = 0;
+        } else {
+          timeout = setTimeout(() => {
+            timeout = 0;
+          }, 1000);
+        }
       }
-    }
-  });
+    });
+  };
+
+  listenForDoublePress(
+    (e) => e.key === "y" && !isInput(e.target),
+    () => navigator.clipboard.writeText(window.location.href),
+  );
 })();
