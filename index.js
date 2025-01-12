@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Copy current url
 // @namespace    https://greasyfork.org/en/users/901750-gooseob
-// @version      1.0.4
+// @version      1.1.0
 // @description  Copy current website url by pressing yy
 // @author       GooseOb
 // @license      MIT
@@ -34,7 +34,8 @@
   };
 
   listenForDoublePress(
-    (e) => e.key === "y" && !isInput(e.target),
+    // 89 is y. Using `e.code` to support different keyboard layouts
+    (e) => e.code === 89 && !isInput(e.target),
     () => navigator.clipboard.writeText(window.location.href),
   );
 })();
